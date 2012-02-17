@@ -34,6 +34,8 @@
 	<array>
 		<string>VP6F</string>
 	</array>
+	<key>PlexClientPlatforms</key>
+	<string>*</string>
 	<key>PlexPluginConsoleLogging</key>
 	<string>1</string>
 </dict>
