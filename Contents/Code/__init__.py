@@ -21,21 +21,6 @@ def Start():
 	
 ####################################################################################################
 
-def GetFlvUrl(url, sender=None):
-	playlist_xml = XML.ElementFromURL(CH_ROOT + CH_PLAYLIST + '/'.join(url.split('/')[:-1]))
-	#playlist_xml = XML.ElementFromURL(url, True)
-	flv_url = playlist_xml.xpath("//video/file")[0].text
-	Log(flv_url)
-	return Redirect(flv_url)
-
-def GetFlvFromPage(url, sender=None):
-	video = HTML.ElementFromURL(url).xpath('//div[@id="flash_player"]/object')[0].get('data')
-	video = urljoin(url, video)
-	Log(video)
-	return Redirect(video)
-
-####################################################################################################
-
 def MainMenu():
 	dir = MediaContainer()
 	MediaContainer.httpCookies = HTTP.GetCookiesForURL(CH_ROOT)
