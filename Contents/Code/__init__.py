@@ -25,7 +25,7 @@ def MainMenu():
     oc.add(DirectoryObject(key=Callback(OriginalsMenu), title="CH Originals"))
     oc.add(DirectoryObject(key=Callback(ShowMenu, url = CH_ROOT + CH_RECENT), title="Recently Added"))
 	oc.add(DirectoryObject(key=Callback(ShowMenu, url = CH_ROOT + CH_VIEWED), title="Most Viewed"))
-    oc.add(DirectoryObject(key=Callback(ShowMenu, url = CH_ROOT + CH_VIDEO_PLAYLISTS), title="Video Playlists"))
+    oc.add(DirectoryObject(key=Callback(VideoPlaylistsMenu, url = CH_ROOT + CH_VIDEO_PLAYLISTS), title="Video Playlists"))
 	return oc
     
 ####################################################################################################
