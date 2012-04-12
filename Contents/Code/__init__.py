@@ -22,14 +22,15 @@ def Start():
 ####################################################################################################
 
 def MainMenu():
-	dir = MediaContainer()
-	MediaContainer.httpCookies = HTTP.GetCookiesForURL(CH_ROOT)
-	dir.Append(Function(DirectoryItem(OriginalsMenu, "CH Originals", thumb=R("icon-default.png"))))
-	dir.Append(Function(DirectoryItem(ShowMenu, "Recently Added", thumb=R("icon-default.png")), url = CH_ROOT + CH_RECENT))
-	dir.Append(Function(DirectoryItem(ShowMenu, "Most Viewed", thumb=R("icon-default.png")), url = CH_ROOT + CH_VIEWED))
-	dir.Append(Function(DirectoryItem(VideoPlaylistsMenu, "Video Playlists"), url = CH_ROOT + CH_VIDEO_PLAYLIST))
-	dir.Append(Function(DirectoryItem(SketchMenu, "Sketch Comedy"), url = CH_ROOT + CH_SKETCH))
-	return dir
+	oc = ObjectContainer()
+	oc.http_cookies = HTTP.CookiesForURL(CH_ROOT)
+    oc.add(DirectoryObject(key=Callback(OriginalsMenu), title="CH Originals"))
+    oc.add(DirectoryObject(key=Callback(ShowMenu, url = CH_ROOT + CH_RECENT), title="Recently Added"))
+	oc.add(DirectoryObject(key=Callback(ShowMenu, url = CH_ROOT + CH_VIEWED), title="Most Viewed"))
+    oc.add(DirectoryObject(key=Callback(ShowMenu, url = CH_ROOT + CH_VIDEO_PLAYLISTS), title="Video Playlists"))
+	return oc
+    
+####################################################################################################
 
 def getNext(url, menu):
 	next = HTML.ElementFromURL(url).xpath('//a[@class="next"]')
