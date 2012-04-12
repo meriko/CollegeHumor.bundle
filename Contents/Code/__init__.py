@@ -26,6 +26,7 @@ def MainMenu():
     oc.add(DirectoryObject(key=Callback(ShowMenu, url = CH_ROOT + CH_RECENT), title="Recently Added"))
 	oc.add(DirectoryObject(key=Callback(ShowMenu, url = CH_ROOT + CH_VIEWED), title="Most Viewed"))
     oc.add(DirectoryObject(key=Callback(VideoPlaylistsMenu, url = CH_ROOT + CH_VIDEO_PLAYLISTS), title="Video Playlists"))
+    oc.add(DirectoryObject(key=Callback(SketchMenu, url = CH_ROOT + CH_SKETCH), title="Sketch Comedy"))
 	return oc
     
 ####################################################################################################
@@ -82,3 +83,5 @@ def getNext(url, menu):
     next = HTML.ElementFromURL(url).xpath('//a[@class="next"]')
 	if len(next) != 0:
 		return Function(DirectoryItem(menu, title='Next', thumb=R('Next.png')), url=urljoin(CH_ROOT, next[0].get('href')))
+    else:
+        return None
