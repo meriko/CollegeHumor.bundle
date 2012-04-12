@@ -14,11 +14,9 @@ CH_PLAYLIST        = "/moogaloop"
 
 def Start():
 	Plugin.AddPrefixHandler(CH_PLUGIN_PREFIX, MainMenu, "College Humor", "icon-default.png", "art-default.jpg")
-	Plugin.AddViewGroup("Details", viewMode="InfoList", mediaType="items")
-	MediaContainer.title1 = L('College Humor')
-	MediaContainer.viewGroup = 'Details'
-	MediaContainer.art = R('art-default.jpg')
-	DirectoryItem.thumb = R('icon-default.png')
+	ObjectContainer.title1 = L('College Humor')
+	ObjectContainer.art = R('art-default.jpg')
+	DirectoryObject.thumb = R('icon-default.png')
 	HTTP.SetCacheTime(CACHE_1HOUR)
 	
 ####################################################################################################
