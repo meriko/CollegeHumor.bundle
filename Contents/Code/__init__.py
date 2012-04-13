@@ -62,7 +62,7 @@ def SketchMenu(url):
 	oc = ObjectContainer(title2="Sketch Comedy")
 	for item in HTML.ElementFromURL(url).xpath("//div[@class='media horizontal sketch_group']"):
 		title = item.xpath('./a')[0].get('title')
-		videoURL = url + item.xpath('./a')[0].get('href')
+		videoURL = CH_ROOT + item.xpath('./a')[0].get('href')
 		summary = item.xpath('./div[@class="details"]/p')[0].text.strip()
 		thumbURL = item.xpath('./a/img')[0].get('src')
 		oc.add(DirectoryObject(key=Callback(ShowMenu, url=videoURL, title=title), title=title, summary=summary,
