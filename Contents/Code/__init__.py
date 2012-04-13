@@ -37,7 +37,7 @@ def OriginalsMenu():
 	for show in HTML.ElementFromURL(CH_ROOT + '/videos').xpath('//div[@class="sidebar_nav"]/ul[2]/li/a')[:-1]:
 		url = CH_ROOT + show.get('href')
 		title = show.text
-        oc.add(DirectoryObject(key=Callback(ShowMenu, url=url), title=title))
+        oc.add(DirectoryObject(key=Callback(ShowMenu, url=url, title=title), title=title))
 	return oc
     
 ####################################################################################################
@@ -49,7 +49,7 @@ def VideoPlaylistsMenu(url):
 		summary = item.xpath('./div/p')[0].text
 		thumb = item.xpath("a/img")[0].get('src')
 		videoURL = CH_ROOT + CH_VIDEO_PLAYLIST + item.xpath('a')[0].get('href'))
-        oc.add(DirectoryObject(key=Callback(ShowMenu, url=videoURL), title=title, thumb=thumb, summary=summary))
+        oc.add(DirectoryObject(key=Callback(ShowMenu, url=videoURL, title=title), title=title, thumb=thumb, summary=summary))
 	next = getNext(url, VideoPlaylistsMenu)
 	if next != None: oc.add(next)
 	return oc
@@ -63,24 +63,27 @@ def SketchMenu(url):
 		videoURL = url + item.xpath('./a')[0].get('href'))
 		summary = item.xpath('./div[@class="details"]/p')[0].text.strip()
 		thumb = item.xpath('./a/img')[0].get('src')
-        oc.add(DirectoryObject(key=Callback(ShowMenu, url=videoURL), title=title, summary=summary, thumb=thumb))
+        oc.add(DirectoryObject(key=Callback(ShowMenu, url=videoURL, title=title), title=title, summary=summary, thumb=thumb))
 	next = getNext(url, SketchMenu)
 	if next != None: oc.add(next)
 	return oc
     
 ####################################################################################################
 
-def ShowMenu(sender, url):
-	dir = MediaContainer(title2=sender.itemTitle)
+def ShowMenu(url, title=''):  
+    oc = ObjectContainer(title2=title)
 	for item in HTML.ElementFromURL(url).xpath('//div[@class="media video horizontal"]'):
 		title = item.xpath('./a')[0].get('title')
 		itemURL = item.xpath('./a')[0].get('href')
 		summary = item.xpath('./div[@class="details"]/p')[0].text.strip()
 		thumb = item.xpath('./a/img')[0].get('src')
+        oc.add(VideoClipObject(url=itemURL, title=title, summary=summary, thumb=thumb))
 		dir.Append(Function(VideoItem(GetFlvUrl, title=title, summary=summary, thumb=thumb), url=itemURL))
 	next = getNext(url, ShowMenu)
-	if next != None: dir.Append(next)
-	return dir
+	if next != None: oc.add(next)
+	return oc
+
+####################################################################################################
 
 def getNext(url, menu):
     next = HTML.ElementFromURL(url).xpath('//a[@class="next"]')
