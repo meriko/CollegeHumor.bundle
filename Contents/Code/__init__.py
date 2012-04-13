@@ -49,8 +49,8 @@ def VideoPlaylistsMenu(url):
 		summary = item.xpath('./div/p')[0].text
 		thumbURL = item.xpath("a/img")[0].get('src')
 		videoURL = CH_ROOT + CH_VIDEO_PLAYLIST + item.xpath('a')[0].get('href')
-		oc.add(DirectoryObject(key=Callback(ShowMenu, url=videoURL, title=title), title=title,
-			thumb=Resource.ContentsOfURLWithFallback(self, url=thumbURL, fallback='icon-default.png', summary=summary)))
+		oc.add(DirectoryObject(key=Callback(ShowMenu, url=videoURL, title=title), title=title, summary=summary,
+			thumb=Resource.ContentsOfURLWithFallback(url=thumbURL, fallback='icon-default.png')))
 	
 	next = getNext(url, VideoPlaylistsMenu)
 	if next != None: oc.add(next)
@@ -66,7 +66,7 @@ def SketchMenu(url):
 		summary = item.xpath('./div[@class="details"]/p')[0].text.strip()
 		thumbURL = item.xpath('./a/img')[0].get('src')
 		oc.add(DirectoryObject(key=Callback(ShowMenu, url=videoURL, title=title), title=title, summary=summary,
-			thumb=Resource.ContentsOfURLWithFallback(self, url=thumbURL, fallback='icon-default.png')))
+			thumb=Resource.ContentsOfURLWithFallback(url=thumbURL, fallback='icon-default.png')))
 	
 	next = getNext(url, SketchMenu)
 	if next != None: oc.add(next)
@@ -76,13 +76,13 @@ def SketchMenu(url):
 
 def ShowMenu(url, title=''):  
 	oc = ObjectContainer(title2=title)
-	for item in HTML.ElementFromURL(url).xpath('//div[@class="media video horizontal"]'):
+	for item in HTML.ElementFromURL(url).xpath('//div[@class="media video horizontal  "]'):
 		title = item.xpath('./a')[0].get('title')
-		itemURL = item.xpath('./a')[0].get('href')
+		itemURL = CH_ROOT+item.xpath('./a')[0].get('href')
 		summary = item.xpath('./div[@class="details"]/p')[0].text.strip()
 		thumbURL = item.xpath('./a/img')[0].get('src')
 		oc.add(VideoClipObject(url=itemURL, title=title, summary=summary, 
-			thumb=Resource.ContentsOfURLWithFallback(self, url=thumbURL, fallback='icon-default.png')))
+			thumb=Resource.ContentsOfURLWithFallback(url=thumbURL, fallback='icon-default.png')))
 	
 	next = getNext(url, ShowMenu)
 	if next != None: oc.add(next)
