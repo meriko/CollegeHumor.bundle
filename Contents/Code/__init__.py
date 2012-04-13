@@ -42,18 +42,19 @@ def OriginalsMenu():
     
 ####################################################################################################
 	
-def VideoPlaylistsMenu(sender, url):
-	# FIXME: get FLV url from webpage
-	dir = MediaContainer(title2=sender.itemTitle)
+def VideoPlaylistsMenu(url):
+    oc = ObjectContainer(title2="Video Playlists")
 	for item in HTML.ElementFromURL(url).xpath("//div[@class='media video playlist horizontal']"):
 		title = item.xpath('./a')[0].get('title')
 		summary = item.xpath('./div/p')[0].text
 		thumb = item.xpath("a/img")[0].get('src')
-		videoURL = urljoin(CH_ROOT + CH_VIDEO_PLAYLIST, item.xpath('a')[0].get('href'))
-		dir.Append(Function(DirectoryItem(ShowMenu, title=title, thumb=thumb, summary=summary), url=videoURL))
+		videoURL = CH_ROOT + CH_VIDEO_PLAYLIST + item.xpath('a')[0].get('href'))
+        oc.add(DirectoryObject(key=Callback(ShowMenu, url=videoURL), title=title, thumb=thumb, summary=summary))
 	next = getNext(url, VideoPlaylistsMenu)
-	if next != None: dir.Append(next)
-	return dir
+	if next != None: oc.add(next)
+	return oc
+    
+####################################################################################################
 	
 def SketchMenu(sender, url):
 	dir = MediaContainer(title2=sender.itemTitle)
