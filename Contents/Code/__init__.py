@@ -23,10 +23,10 @@ def MainMenu():
 	oc = ObjectContainer()
 	oc.http_cookies = HTTP.CookiesForURL(CH_ROOT)
     oc.add(DirectoryObject(key=Callback(OriginalsMenu), title="CH Originals"))
-    oc.add(DirectoryObject(key=Callback(ShowMenu, url = CH_ROOT + CH_RECENT), title="Recently Added"))
-	oc.add(DirectoryObject(key=Callback(ShowMenu, url = CH_ROOT + CH_VIEWED), title="Most Viewed"))
-    oc.add(DirectoryObject(key=Callback(VideoPlaylistsMenu, url = CH_ROOT + CH_VIDEO_PLAYLISTS), title="Video Playlists"))
-    oc.add(DirectoryObject(key=Callback(SketchMenu, url = CH_ROOT + CH_SKETCH), title="Sketch Comedy"))
+    oc.add(DirectoryObject(key=Callback(ShowMenu, url=CH_ROOT+CH_RECENT, title="Recently Added"), title="Recently Added"))
+	oc.add(DirectoryObject(key=Callback(ShowMenu, url=CH_ROOT+CH_VIEWED, title="Most Viewed"), title="Most Viewed"))
+    oc.add(DirectoryObject(key=Callback(VideoPlaylistsMenu, url=CH_ROOT+CH_VIDEO_PLAYLISTS), title="Video Playlists"))
+    oc.add(DirectoryObject(key=Callback(SketchMenu, url=CH_ROOT+CH_SKETCH), title="Sketch Comedy"))
 	return oc
     
 ####################################################################################################
@@ -78,7 +78,6 @@ def ShowMenu(url, title=''):
 		summary = item.xpath('./div[@class="details"]/p')[0].text.strip()
 		thumb = item.xpath('./a/img')[0].get('src')
         oc.add(VideoClipObject(url=itemURL, title=title, summary=summary, thumb=thumb))
-		dir.Append(Function(VideoItem(GetFlvUrl, title=title, summary=summary, thumb=thumb), url=itemURL))
 	next = getNext(url, ShowMenu)
 	if next != None: oc.add(next)
 	return oc
