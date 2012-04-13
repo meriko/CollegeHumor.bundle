@@ -47,9 +47,10 @@ def VideoPlaylistsMenu(url):
 	for item in HTML.ElementFromURL(url).xpath("//div[@class='media video playlist horizontal']"):
 		title = item.xpath('./a')[0].get('title')
 		summary = item.xpath('./div/p')[0].text
-		thumb = item.xpath("a/img")[0].get('src')
+		thumbURL = item.xpath("a/img")[0].get('src')
 		videoURL = CH_ROOT + CH_VIDEO_PLAYLIST + item.xpath('a')[0].get('href'))
-        oc.add(DirectoryObject(key=Callback(ShowMenu, url=videoURL, title=title), title=title, thumb=thumb, summary=summary))
+        oc.add(DirectoryObject(key=Callback(ShowMenu, url=videoURL, title=title), title=title,
+            thumb=Resource.ContentsOfURLWithFallback(self, url=thumbURL, fallback='icon-default.png', summary=summary))
 	next = getNext(url, VideoPlaylistsMenu)
 	if next != None: oc.add(next)
 	return oc
@@ -62,8 +63,9 @@ def SketchMenu(url):
 		title = item.xpath('./a')[0].get('title')
 		videoURL = url + item.xpath('./a')[0].get('href'))
 		summary = item.xpath('./div[@class="details"]/p')[0].text.strip()
-		thumb = item.xpath('./a/img')[0].get('src')
-        oc.add(DirectoryObject(key=Callback(ShowMenu, url=videoURL, title=title), title=title, summary=summary, thumb=thumb))
+		thumbURL = item.xpath('./a/img')[0].get('src')
+        oc.add(DirectoryObject(key=Callback(ShowMenu, url=videoURL, title=title), title=title, summary=summary,
+            thumb=Resource.ContentsOfURLWithFallback(self, url=thumbURL, fallback='icon-default.png'))
 	next = getNext(url, SketchMenu)
 	if next != None: oc.add(next)
 	return oc
@@ -76,8 +78,9 @@ def ShowMenu(url, title=''):
 		title = item.xpath('./a')[0].get('title')
 		itemURL = item.xpath('./a')[0].get('href')
 		summary = item.xpath('./div[@class="details"]/p')[0].text.strip()
-		thumb = item.xpath('./a/img')[0].get('src')
-        oc.add(VideoClipObject(url=itemURL, title=title, summary=summary, thumb=thumb))
+		thumbURL = item.xpath('./a/img')[0].get('src')
+        oc.add(VideoClipObject(url=itemURL, title=title, summary=summary, 
+            thumb=Resource.ContentsOfURLWithFallback(self, url=thumbURL, fallback='icon-default.png'))
 	next = getNext(url, ShowMenu)
 	if next != None: oc.add(next)
 	return oc
