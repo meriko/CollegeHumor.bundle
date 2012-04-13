@@ -88,6 +88,6 @@ def ShowMenu(url, title=''):
 def getNext(url, menu):
     next = HTML.ElementFromURL(url).xpath('//a[@class="next"]')
 	if len(next) != 0:
-		return Function(DirectoryItem(menu, title='Next', thumb=R('Next.png')), url=urljoin(CH_ROOT, next[0].get('href')))
+		return Function(DirectoryItem(menu, title='Next', thumb=R('Next.png')), url=CH_ROOT + next[0].get('href'))
     else:
         return None
