@@ -56,17 +56,19 @@ def VideoPlaylistsMenu(url):
     
 ####################################################################################################
 	
-def SketchMenu(sender, url):
-	dir = MediaContainer(title2=sender.itemTitle)
+def SketchMenu(url):
+    oc = ObjectContainer(title2="Sketch Comedy")
 	for item in HTML.ElementFromURL(url).xpath("//div[@class='media horizontal sketch_group']"):
 		title = item.xpath('./a')[0].get('title')
-		videoURL = urljoin(url, item.xpath('./a')[0].get('href'))
+		videoURL = url + item.xpath('./a')[0].get('href'))
 		summary = item.xpath('./div[@class="details"]/p')[0].text.strip()
 		thumb = item.xpath('./a/img')[0].get('src')
-		dir.Append(Function(DirectoryItem(ShowMenu, title=title, summary=summary, thumb=thumb), url=videoURL))
+        oc.add(DirectoryObject(key=Callback(ShowMenu, url=videoURL), title=title, summary=summary, thumb=thumb))
 	next = getNext(url, SketchMenu)
-	if next != None: dir.Append(next)
-	return dir
+	if next != None: oc.add(next)
+	return oc
+    
+####################################################################################################
 
 def ShowMenu(sender, url):
 	dir = MediaContainer(title2=sender.itemTitle)
