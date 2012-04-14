@@ -6,7 +6,7 @@ CH_VIEWED = "/videos/most-viewed"
 CH_VIDEO_PLAYLIST = '/videos/playlists'
 CH_WEB_CELEB = '/web-celeb-hall-of-fame'
 CH_SKETCH = '/sketch-comedy'
-CH_PLAYLIST        = "/moogaloop"
+CH_PLAYLIST = "/moogaloop"
 
 ####################################################################################################
 
@@ -16,7 +16,7 @@ def Start():
 	ObjectContainer.art = R('art-default.jpg')
 	DirectoryObject.thumb = R('icon-default.png')
 	HTTP.CacheTime = CACHE_1HOUR
-	
+
 ####################################################################################################
 
 def MainMenu():
@@ -30,10 +30,10 @@ def MainMenu():
 	return oc
 
 ####################################################################################################
-			
+
 def OriginalsMenu():
 	oc = ObjectContainer(title2="CH Originals")
-	
+
 	for show in HTML.ElementFromURL(CH_ROOT + '/videos').xpath('//div[@class="sidebar_nav"]/ul[2]/li/a')[:-1]:
 		url = CH_ROOT + show.get('href')
 		title = show.text
@@ -41,7 +41,7 @@ def OriginalsMenu():
 	return oc
 
 ####################################################################################################
-	
+
 def VideoPlaylistsMenu(url):
 	oc = ObjectContainer(title2="Video Playlists")
 	for item in HTML.ElementFromURL(url).xpath("//div[@class='media video playlist horizontal']"):
@@ -51,13 +51,13 @@ def VideoPlaylistsMenu(url):
 		videoURL = CH_ROOT + CH_VIDEO_PLAYLIST + item.xpath('a')[0].get('href')
 		oc.add(DirectoryObject(key=Callback(ShowMenu, url=videoURL, title=title), title=title, summary=summary,
 			thumb=Resource.ContentsOfURLWithFallback(url=thumbURL, fallback='icon-default.png')))
-	
-	next = getNext(url, VideoPlaylistsMenu)
+
+	next = GetNext(url, VideoPlaylistsMenu)
 	if next != None: oc.add(next)
 	return oc
 
 ####################################################################################################
-	
+
 def SketchMenu(url):
 	oc = ObjectContainer(title2="Sketch Comedy")
 	for item in HTML.ElementFromURL(url).xpath("//div[@class='media horizontal sketch_group']"):
@@ -67,8 +67,8 @@ def SketchMenu(url):
 		thumbURL = item.xpath('./a/img')[0].get('src')
 		oc.add(DirectoryObject(key=Callback(ShowMenu, url=videoURL, title=title), title=title, summary=summary,
 			thumb=Resource.ContentsOfURLWithFallback(url=thumbURL, fallback='icon-default.png')))
-	
-	next = getNext(url, SketchMenu)
+
+	next = GetNext(url, SketchMenu)
 	if next != None: oc.add(next)
 	return oc
 
@@ -77,22 +77,22 @@ def SketchMenu(url):
 def ShowMenu(url, title=''):  
 	oc = ObjectContainer(title2=title)
 	for item in HTML.ElementFromURL(url).xpath('//div[@class="media video horizontal  "]'):
-		title = item.xpath('./a')[0].get('title')
+		title = item.xpath('./a//strong')[0].text.strip()
 		itemURL = CH_ROOT+item.xpath('./a')[0].get('href')
 		summary = item.xpath('./div[@class="details"]/p')[0].text.strip()
 		thumbURL = item.xpath('./a/img')[0].get('src')
 		oc.add(VideoClipObject(url=itemURL, title=title, summary=summary, 
 			thumb=Resource.ContentsOfURLWithFallback(url=thumbURL, fallback='icon-default.png')))
-	
-	next = getNext(url, ShowMenu)
+
+	next = GetNext(url, ShowMenu)
 	if next != None: oc.add(next)
 	return oc
 
 ####################################################################################################
 
-def getNext(url, menu):
+def GetNext(url, menu):
 	next = HTML.ElementFromURL(url).xpath('//a[@class="next"]')
 	if len(next) != 0:
-		return (DirectoryObject(key=Callback(menu, url=CH_ROOT + next[0].get('href')), title='Next', thumb=R('Next.png')))
+		return (DirectoryObject(key=Callback(menu, url=CH_ROOT + next[0].get('href')), title='Next', thumb=R('icon-next.png')))
 	else:
 		return None
