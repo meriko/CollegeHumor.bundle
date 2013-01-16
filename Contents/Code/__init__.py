@@ -1,98 +1,104 @@
-CH_ROOT = "http://www.collegehumor.com"
-CH_PLUGIN_PREFIX = "/video/college_humor"
-CH_RECENT = "/videos"
-CH_VIEWED = "/videos/most-viewed"
+ICON = 'icon-default.png'
+ART = 'art-default.jpg'
 
-CH_VIDEO_PLAYLIST = '/videos/playlists'
-CH_WEB_CELEB = '/web-celeb-hall-of-fame'
-CH_SKETCH = '/sketch-comedy'
-CH_PLAYLIST = "/moogaloop"
+BASE_URL = 'http://www.collegehumor.com'
+ORIGINALS_HOME = '%s/originals' % BASE_URL
+RECENT = '%s/videos' % BASE_URL
+MOST_VIEWED = '%s/videos/most-viewed' % BASE_URL
+SKETCH_COMEDY = '%s/sketch-comedy/alphabetical/page:%%d' % BASE_URL
 
 ####################################################################################################
-
 def Start():
-	Plugin.AddPrefixHandler(CH_PLUGIN_PREFIX, MainMenu, "College Humor", "icon-default.png", "art-default.jpg")
-	ObjectContainer.title1 = L('College Humor')
-	ObjectContainer.art = R('art-default.jpg')
-	DirectoryObject.thumb = R('icon-default.png')
+
+	ObjectContainer.title1 = 'CollegeHumor'
+	ObjectContainer.art = R(ART)
+	DirectoryObject.thumb = R(ICON)
+	NextPageObject.thumb = R(ICON)
 	HTTP.CacheTime = CACHE_1HOUR
+	HTTP.Headers['User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:18.0) Gecko/20100101 Firefox/18.0'
 
 ####################################################################################################
-
+@handler('/video/collegehumor', 'College Humor', thumb=ICON, art=ART)
 def MainMenu():
+
 	oc = ObjectContainer()
-	oc.http_cookies = HTTP.CookiesForURL(CH_ROOT)
-	oc.add(DirectoryObject(key=Callback(OriginalsMenu), title="CH Originals"))
-	oc.add(DirectoryObject(key=Callback(ShowMenu, url=CH_ROOT+CH_RECENT, title="Recently Added"), title="Recently Added"))
-	oc.add(DirectoryObject(key=Callback(ShowMenu, url=CH_ROOT+CH_VIEWED, title="Most Viewed"), title="Most Viewed"))
-	oc.add(DirectoryObject(key=Callback(VideoPlaylistsMenu, url=CH_ROOT+CH_VIDEO_PLAYLIST), title="Video Playlists"))
-	oc.add(DirectoryObject(key=Callback(SketchMenu, url=CH_ROOT+CH_SKETCH), title="Sketch Comedy"))
+
+	oc.add(DirectoryObject(key=Callback(OriginalsMenu, title='Originals'), title='Originals'))
+	oc.add(DirectoryObject(key=Callback(ShowMenu, url=RECENT, title='Recently Added'), title='Recently Added'))
+	oc.add(DirectoryObject(key=Callback(ShowMenu, url=MOST_VIEWED, title='Most Viewed'), title='Most Viewed'))
+	oc.add(DirectoryObject(key=Callback(SketchMenu, title='Sketch Comedy'), title='Sketch Comedy'))
+
 	return oc
 
 ####################################################################################################
+@route('/video/collegehumor/originals')
+def OriginalsMenu(title):
 
-def OriginalsMenu():
-	oc = ObjectContainer(title2="CH Originals")
-
-	for show in HTML.ElementFromURL(CH_ROOT + '/videos').xpath('//div[@class="sidebar_nav"]/ul[2]/li/a')[:-1]:
-		url = CH_ROOT + show.get('href')
-		title = show.text
-		oc.add(DirectoryObject(key=Callback(ShowMenu, url=url, title=title), title=title))
-	return oc
-
-####################################################################################################
-
-def VideoPlaylistsMenu(url):
-	oc = ObjectContainer(title2="Video Playlists")
-	for item in HTML.ElementFromURL(url).xpath("//div[@class='media video playlist horizontal']"):
-		title = item.xpath('./a')[0].get('title')
-		summary = item.xpath('./div/p')[0].text
-		thumbURL = item.xpath("a/img")[0].get('src')
-		videoURL = CH_ROOT + CH_VIDEO_PLAYLIST + item.xpath('a')[0].get('href')
-		oc.add(DirectoryObject(key=Callback(ShowMenu, url=videoURL, title=title), title=title, summary=summary,
-			thumb=Resource.ContentsOfURLWithFallback(url=thumbURL, fallback='icon-default.png')))
-
-	next = GetNext(url, VideoPlaylistsMenu)
-	if next != None: oc.add(next)
-	return oc
-
-####################################################################################################
-
-def SketchMenu(url):
-	oc = ObjectContainer(title2="Sketch Comedy")
-	for item in HTML.ElementFromURL(url).xpath("//div[@class='media horizontal sketch_group']"):
-		title = item.xpath('./a')[0].get('title')
-		videoURL = CH_ROOT + item.xpath('./a')[0].get('href')
-		summary = item.xpath('./div[@class="details"]/p')[0].text.strip()
-		thumbURL = item.xpath('./a/img')[0].get('src')
-		oc.add(DirectoryObject(key=Callback(ShowMenu, url=videoURL, title=title), title=title, summary=summary,
-			thumb=Resource.ContentsOfURLWithFallback(url=thumbURL, fallback='icon-default.png')))
-
-	next = GetNext(url, SketchMenu)
-	if next != None: oc.add(next)
-	return oc
-
-####################################################################################################
-
-def ShowMenu(url, title=''):  
 	oc = ObjectContainer(title2=title)
-	for item in HTML.ElementFromURL(url).xpath('//div[@class="media video horizontal  "]'):
-		title = item.xpath('./a//strong')[0].text.strip()
-		itemURL = CH_ROOT+item.xpath('./a')[0].get('href')
-		summary = item.xpath('./div[@class="details"]/p')[0].text.strip()
-		thumbURL = item.xpath('./a/img')[0].get('src')
-		oc.add(VideoClipObject(url=itemURL, title=title, summary=summary, 
-			thumb=Resource.ContentsOfURLWithFallback(url=thumbURL, fallback='icon-default.png')))
+	html = HTML.ElementFromURL(ORIGINALS_HOME)
 
-	next = GetNext(url, ShowMenu)
-	if next != None: oc.add(next)
+	for show in html.xpath('//div[@id="series-carousel"]//a/img/parent::a'):
+		url = BASE_URL + show.get('href')
+		title = show.get('title')
+		thumb = show.xpath('./img/@src')[0]
+
+		oc.add(DirectoryObject(
+			key = Callback(ShowMenu, url=url, title=title),
+			title = title,
+			thumb = Resource.ContentsOfURLWithFallback(url=thumb, fallback='icon-default.png')
+		))
+
 	return oc
 
 ####################################################################################################
+@route('/video/collegehumor/sketchcomedy')
+def SketchMenu(title):
 
-def GetNext(url, menu):
-	next = HTML.ElementFromURL(url).xpath('//a[@class="next"]')
-	if len(next) != 0:
-		return (DirectoryObject(key=Callback(menu, url=CH_ROOT + next[0].get('href')), title='Next', thumb=R('icon-next.png')))
+	oc = ObjectContainer(title2=title)
+	html = HTML.ElementFromURL(SKETCH_COMEDY % 1)
+
+	last_page = html.xpath('//div[@class="pagination"]/a[not(@class)][last()]/@href')
+	if len(last_page) < 1:
+		pages = 1
 	else:
-		return None
+		pages = int(last_page[0].split(':')[1])
+
+	for page in range(1, pages+1):
+		for show in HTML.ElementFromURL(SKETCH_COMEDY % page).xpath('//div[@class="primary"]//div[contains(@class, "sketch-group")]/a'):
+			url = BASE_URL + show.get('href')
+			title = show.get('title')
+			thumb = show.xpath('./img/@src')[0]
+
+			oc.add(DirectoryObject(
+				key = Callback(ShowMenu, url=url, title=title),
+				title = title,
+				thumb = Resource.ContentsOfURLWithFallback(url=thumb, fallback='icon-default.png')
+			))
+
+	return oc
+
+####################################################################################################
+@route('/video/collegehumor/show', page=int)
+def ShowMenu(url, title, page=1):
+
+	oc = ObjectContainer(title2=title)
+	html = HTML.ElementFromURL('%s/page:%d' % (url, page))
+
+	for item in html.xpath('//div[@class="primary"]//div[contains(@class, "media")]/a'):
+		video_url = BASE_URL + item.get('href')
+		video_title = item.get('title')
+		thumb = item.xpath('./img/@src')[0]
+
+		oc.add(VideoClipObject(
+			url = video_url,
+			title = video_title,
+			thumb = Resource.ContentsOfURLWithFallback(url=thumb, fallback='icon-default.png')
+		))
+
+	if len(html.xpath('//a[@class="next"]')) > 0:
+		oc.add(NextPageObject(
+			key = Callback(ShowMenu, url=url, title=title, page=page+1),
+			title = 'More...'
+		))
+
+	return oc
