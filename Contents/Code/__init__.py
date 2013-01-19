@@ -86,6 +86,10 @@ def ShowMenu(url, title, page=1):
 
 	for item in html.xpath('//div[@class="primary"]//div[contains(@class, "media")]/a'):
 		video_url = BASE_URL + item.get('href')
+
+		if '/playlist/' in video_url:
+			continue
+
 		video_title = item.get('title')
 		thumb = item.xpath('./img/@src')[0]
 
