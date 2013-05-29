@@ -1,6 +1,3 @@
-ICON = 'icon-default.png'
-ART = 'art-default.jpg'
-
 BASE_URL = 'http://www.collegehumor.com'
 ORIGINALS_HOME = '%s/originals' % BASE_URL
 RECENT = '%s/videos' % BASE_URL
@@ -11,14 +8,11 @@ SKETCH_COMEDY = '%s/sketch-comedy/alphabetical/page:%%d' % BASE_URL
 def Start():
 
 	ObjectContainer.title1 = 'CollegeHumor'
-	ObjectContainer.art = R(ART)
-	DirectoryObject.thumb = R(ICON)
-	NextPageObject.thumb = R(ICON)
 	HTTP.CacheTime = CACHE_1HOUR
-	HTTP.Headers['User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:18.0) Gecko/20100101 Firefox/18.0'
+	HTTP.Headers['User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0'
 
 ####################################################################################################
-@handler('/video/collegehumor', 'College Humor', thumb=ICON, art=ART)
+@handler('/video/collegehumor', 'CollegeHumor')
 def MainMenu():
 
 	oc = ObjectContainer()
@@ -45,7 +39,7 @@ def OriginalsMenu(title):
 		oc.add(DirectoryObject(
 			key = Callback(ShowMenu, url=url, title=title),
 			title = title,
-			thumb = Resource.ContentsOfURLWithFallback(url=thumb, fallback='icon-default.png')
+			thumb = Resource.ContentsOfURLWithFallback(url=thumb)
 		))
 
 	return oc
@@ -72,7 +66,7 @@ def SketchMenu(title):
 			oc.add(DirectoryObject(
 				key = Callback(ShowMenu, url=url, title=title),
 				title = title,
-				thumb = Resource.ContentsOfURLWithFallback(url=thumb, fallback='icon-default.png')
+				thumb = Resource.ContentsOfURLWithFallback(url=thumb)
 			))
 
 	return oc
@@ -96,7 +90,7 @@ def ShowMenu(url, title, page=1):
 		oc.add(VideoClipObject(
 			url = video_url,
 			title = video_title,
-			thumb = Resource.ContentsOfURLWithFallback(url=thumb, fallback='icon-default.png')
+			thumb = Resource.ContentsOfURLWithFallback(url=thumb)
 		))
 
 	if len(html.xpath('//a[@class="next"]')) > 0:
